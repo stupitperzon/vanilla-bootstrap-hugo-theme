@@ -1,13 +1,35 @@
 {{ define "main" }}
 
+<script>
+  const bc = new BroadcastChannel("homepage");
+
+  bc.onmessage = (event) => {
+    if (event.data === "0") {
+      bc.postMessage("1");
+    }
+    if (event.data === "1") {
+      const element = document.getElementById("audio");
+      element.remove();
+      bc.close();
+    }
+  };
+
+  bc.postMessage("0");
+</script>
+
 <div id="home-jumbotron" class="jumbotron text-center">
-{{ with .Content }}
+  {{ with .Content }}
   <h1>{{ $.Page.Title }}</h1>
   {{ . }}
-{{ else }}
+  {{ else }}
   <h1>{{ .Site.Title }}</h1>
   <p class="font-125">{{ .Site.Params.homeText | markdownify }}</p>
-{{ end }}
+  {{ end }}
+  {{ if .Site.Params.audio }}
+  <audio controls autoplay loop id="audio">
+    <source src="{{ .Site.Params.audio }}" type="audio/mpeg">
+  </audio>
+  {{ end }}
 </div>
 
 {{ end }}
